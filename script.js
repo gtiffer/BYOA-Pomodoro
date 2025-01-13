@@ -2,6 +2,7 @@ let timeLeft;
 let timerId = null;
 let isWorkTime = true;
 let isRunning = false;
+let sessionFocus = null;
 
 const minutesDisplay = document.getElementById('minutes');
 const secondsDisplay = document.getElementById('seconds');
@@ -45,6 +46,11 @@ function switchMode() {
     modeToggleButton.textContent = isWorkTime ? 'Rest Mode' : 'Work Mode';
     quoteContainer.classList.remove('show');
     updateDisplay();
+    if (!isWorkTime) {
+        sessionFocus = null;
+        const focusText = document.querySelector('.focus-text');
+        if (focusText) focusText.remove();
+    }
 }
 
 // Wind animation functionality
@@ -101,39 +107,51 @@ function updateWindAnimation(isPlaying) {
 }
 
 function startTimer() {
-    if (!isRunning) {
-        if (timeLeft === undefined) {
-            timeLeft = 25 * 60;
-        }
-        if (isWorkTime) {
-            quoteText.textContent = getRandomQuote();
-            quoteContainer.classList.add('show');
-            modeText.style.display = 'none';
-        } else {
-            quoteContainer.classList.remove('show');
-        }
-        updateWindAnimation(true);
-        timerId = setInterval(() => {
-            timeLeft--;
-            updateDisplay();
-            if (timeLeft === 0) {
-                clearInterval(timerId);
-                timerId = null;
-                isRunning = false;
-                switchMode();
-                startTimer();
-            }
-        }, 1000);
-        isRunning = true;
-        startButton.textContent = 'Pause';
-    } else {
+    if (isRunning) {
+        // Pause the timer
         clearInterval(timerId);
-        timerId = null;
         isRunning = false;
         startButton.textContent = 'Start';
-        quoteContainer.classList.remove('show');
         updateWindAnimation(false);
-        updateDisplay();
+        return;
+    }
+
+    if (isWorkTime && !sessionFocus) {
+        // Show popup to get user's focus before starting
+        const focus = prompt("What are you focusing on today?");
+        if (!focus) return; // Don't start if user cancels
+        sessionFocus = focus;
+        updateFocusDisplay();
+    }
+
+    isRunning = true;
+    startButton.textContent = 'Pause';
+    updateWindAnimation(true);
+    timerId = setInterval(() => {
+        if (timeLeft > 0) {
+            timeLeft--;
+            updateDisplay();
+        } else {
+            clearInterval(timerId);
+            isRunning = false;
+            startButton.textContent = 'Start';
+            updateWindAnimation(false);
+        }
+    }, 1000);
+}
+
+// Add new function to update focus display
+function updateFocusDisplay() {
+    const container = document.querySelector('.container');
+    const existingFocus = container.querySelector('.focus-text');
+    
+    if (existingFocus) {
+        existingFocus.textContent = sessionFocus;
+    } else if (sessionFocus) {
+        const focusElement = document.createElement('p');
+        focusElement.className = 'focus-text';
+        focusElement.textContent = sessionFocus;
+        container.insertBefore(focusElement, container.querySelector('.controls'));
     }
 }
 
