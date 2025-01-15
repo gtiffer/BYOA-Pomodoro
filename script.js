@@ -4,29 +4,95 @@ let isWorkTime = true;
 let isRunning = false;
 let sessionFocus = null;
 
-// Create audio context and click sound
+// Create audio context and sounds
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
 const clickSound = {
     play: async () => {
         const oscillator = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
         
-        // Set up oscillator for a quick tick sound
         oscillator.type = 'sine';
         oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
         oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.03);
         
-        // Set up gain for a shorter, lighter sound
         gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
         gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.03);
         
-        // Connect nodes
         oscillator.connect(gainNode);
         gainNode.connect(audioContext.destination);
         
-        // Play sound with shorter duration
         oscillator.start();
         oscillator.stop(audioContext.currentTime + 0.03);
+    }
+};
+
+const restModeSound = {
+    play: async () => {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        const filter = audioContext.createBiquadFilter();
+        
+        // Set up filter for a smoother, softer sound
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(800, audioContext.currentTime);
+        filter.Q.setValueAtTime(0.7, audioContext.currentTime);
+        
+        // Create a gentler, descending sound
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(300, audioContext.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(150, audioContext.currentTime + 0.7);
+        
+        // Softer volume envelope with longer fade
+        gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.08, audioContext.currentTime + 0.2);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.7);
+        
+        // Connect nodes
+        oscillator.connect(filter);
+        filter.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        // Play sound
+        oscillator.start();
+        oscillator.stop(audioContext.currentTime + 0.7);
+    }
+};
+
+const workModeSound = {
+    play: async () => {
+        const bufferSize = audioContext.sampleRate * 0.1; // 100ms of noise
+        const noiseBuffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+        const output = noiseBuffer.getChannelData(0);
+        
+        // Generate white noise
+        for (let i = 0; i < bufferSize; i++) {
+            output[i] = Math.random() * 2 - 1;
+        }
+        
+        const noiseSource = audioContext.createBufferSource();
+        const filter = audioContext.createBiquadFilter();
+        const gainNode = audioContext.createGain();
+        
+        // Set up filter for paper-like sound
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(2000, audioContext.currentTime);
+        filter.Q.setValueAtTime(1, audioContext.currentTime);
+        
+        // Set volume envelope
+        gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.15, audioContext.currentTime + 0.02);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+        
+        // Connect nodes
+        noiseSource.buffer = noiseBuffer;
+        noiseSource.connect(filter);
+        filter.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        // Play sound
+        noiseSource.start();
+        noiseSource.stop(audioContext.currentTime + 0.1);
     }
 };
 
@@ -71,6 +137,22 @@ function switchMode() {
     modeText.style.display = 'inline';
     modeToggleButton.textContent = isWorkTime ? 'Rest Mode' : 'Work Mode';
     quoteContainer.classList.remove('show');
+    
+    // Play appropriate sound for the mode switch
+    if (isWorkTime) {
+        workModeSound.play();
+    } else {
+        restModeSound.play();
+    }
+    
+    // Always clear the timer and reset running state
+    if (timerId) {
+        clearInterval(timerId);
+        timerId = null;
+    }
+    isRunning = false;
+    startButton.textContent = 'Start';
+    updateWindAnimation(false);
     updateDisplay();
 }
 
@@ -175,11 +257,7 @@ function resetTimer() {
 
 startButton.addEventListener('click', startTimer);
 resetButton.addEventListener('click', resetTimer);
-modeToggleButton.addEventListener('click', () => {
-    if (!isRunning) {
-        switchMode();
-    }
-});
+modeToggleButton.addEventListener('click', switchMode);
 
 // Initialize the display
 resetTimer(); 
