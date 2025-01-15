@@ -12,6 +12,10 @@ const modeToggleButton = document.getElementById('mode-toggle');
 const modeText = document.getElementById('mode-text');
 const quoteText = document.getElementById('quote-text');
 const quoteContainer = document.querySelector('.quote');
+const focusModal = document.getElementById('focus-modal');
+const focusInput = document.getElementById('focus-input');
+const focusSubmit = document.getElementById('focus-submit');
+const focusCancel = document.getElementById('focus-cancel');
 
 const productivityQuotes = [
     "Focus on being productive instead of busy.",
@@ -106,6 +110,47 @@ function updateWindAnimation(isPlaying) {
     });
 }
 
+function showFocusModal() {
+    focusModal.style.display = 'flex';
+    focusInput.focus();
+    return new Promise((resolve) => {
+        function handleSubmit() {
+            const focus = focusInput.value.trim();
+            if (focus) {
+                focusModal.style.display = 'none';
+                focusInput.value = '';
+                cleanup();
+                resolve(focus);
+            }
+        }
+
+        function handleCancel() {
+            focusModal.style.display = 'none';
+            focusInput.value = '';
+            cleanup();
+            resolve(null);
+        }
+
+        function handleKeydown(e) {
+            if (e.key === 'Enter') {
+                handleSubmit();
+            } else if (e.key === 'Escape') {
+                handleCancel();
+            }
+        }
+
+        function cleanup() {
+            focusSubmit.removeEventListener('click', handleSubmit);
+            focusCancel.removeEventListener('click', handleCancel);
+            focusInput.removeEventListener('keydown', handleKeydown);
+        }
+
+        focusSubmit.addEventListener('click', handleSubmit);
+        focusCancel.addEventListener('click', handleCancel);
+        focusInput.addEventListener('keydown', handleKeydown);
+    });
+}
+
 function startTimer() {
     if (isRunning) {
         // Pause the timer
@@ -117,13 +162,19 @@ function startTimer() {
     }
 
     if (isWorkTime && !sessionFocus) {
-        // Show popup to get user's focus before starting
-        const focus = prompt("What are you focusing on today?");
-        if (!focus) return; // Don't start if user cancels
-        sessionFocus = focus;
-        updateFocusDisplay();
+        // Show custom modal to get user's focus
+        showFocusModal().then(focus => {
+            if (!focus) return; // Don't start if user cancels
+            sessionFocus = focus;
+            updateFocusDisplay();
+            startTimerCountdown();
+        });
+    } else {
+        startTimerCountdown();
     }
+}
 
+function startTimerCountdown() {
     isRunning = true;
     startButton.textContent = 'Pause';
     updateWindAnimation(true);

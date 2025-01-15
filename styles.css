@@ -286,4 +286,87 @@ body {
 
 .wind-particle.paused {
     animation-play-state: paused !important;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: var(--container-bg);
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px var(--shadow-color);
+    max-width: 90%;
+    width: 400px;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+#focus-input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid var(--text-secondary);
+    border-radius: 8px;
+    background: var(--container-bg);
+    color: var(--text-primary);
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    box-sizing: border-box;
+}
+
+#focus-input:focus {
+    outline: none;
+    border-color: var(--text-primary);
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+.modal-buttons button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+#focus-submit {
+    background: linear-gradient(135deg, #2f855a 0%, #276749 100%);
+    color: white;
+}
+
+#focus-submit:hover {
+    background: linear-gradient(135deg, #276749 0%, #22543d 100%);
+    transform: translateY(-1px);
+}
+
+#focus-cancel {
+    background: var(--container-bg);
+    color: var(--text-primary);
+    border: 2px solid var(--text-secondary);
+}
+
+#focus-cancel:hover {
+    background: var(--text-secondary);
+    color: var(--container-bg);
 } 
