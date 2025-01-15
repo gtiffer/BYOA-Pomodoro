@@ -370,3 +370,204 @@ body {
     background: var(--text-secondary);
     color: var(--container-bg);
 } 
+
+/* Task Section Styles */
+.task-section {
+    margin-top: 2rem;
+    text-align: left;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    padding-top: 1rem;
+}
+
+[data-theme="dark"] .task-section {
+    border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+.task-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.task-header h2 {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin: 0;
+    opacity: 0.8;
+}
+
+.task-header h3 {
+    font-size: 1.2rem;
+    margin: 0.5rem 0 0;
+    color: var(--text-primary);
+}
+
+.tasks h2 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.task-list {
+    margin-bottom: 1rem;
+}
+
+.task-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+[data-theme="dark"] .task-item {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.task-item:hover {
+    background: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="dark"] .task-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.task-checkbox {
+    margin-right: 1rem;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid var(--text-secondary);
+    cursor: pointer;
+    position: relative;
+}
+
+.task-checkbox.checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--text-primary);
+}
+
+.task-text {
+    flex-grow: 1;
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+}
+
+.task-checkbox.checked + .task-text {
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
+.task-count {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.add-task-btn {
+    width: 100%;
+    padding: 1rem;
+    border: 2px dashed rgba(0, 0, 0, 0.2);
+    background: transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    transition: all 0.2s ease;
+}
+
+[data-theme="dark"] .add-task-btn {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.add-task-btn:hover {
+    border-color: var(--text-secondary);
+    color: var(--text-primary);
+}
+
+.task-actions {
+    display: flex;
+    gap: 0.5rem;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.task-item:hover .task-actions {
+    opacity: 1;
+}
+
+.task-action-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 4px;
+}
+
+.task-action-btn:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] .task-action-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.task-input-container {
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+[data-theme="dark"] .task-input-container {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.task-input {
+    width: 100%;
+    padding: 0.5rem;
+    border: none;
+    background: transparent;
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+.task-input:focus {
+    outline: none;
+}
+
+.task-input::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.7;
+}
+
+.drag-handle {
+    cursor: grab;
+    padding: 0 0.5rem;
+    color: var(--text-secondary);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.task-item:hover .drag-handle {
+    opacity: 0.7;
+}
+
+.task-item.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+}
+
+.task-item.dragging .drag-handle {
+    cursor: grabbing;
+} 
